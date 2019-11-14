@@ -103,7 +103,7 @@ class WeatherScraper(HTMLParser):
         if self.inMyDate and self.inTd and self.i == 1:
             try:
                 floatedMaxData = data
-                print("Max  Inner:", floatedMaxData)
+                # print("Max  Inner:", floatedMaxData)
                 self.dictInner[self.keys[0]] = floatedMaxData
             except Exception as e:
                 self.dictInner[self.keys[0]] = 0
@@ -112,7 +112,7 @@ class WeatherScraper(HTMLParser):
         if self.inMyDate and self.inTd and self.i == 2:
             try:
                 floatedMinData = data
-                print("Min  Inner:", floatedMinData)
+                # print("Min  Inner:", floatedMinData)
                 self.dictInner[self.keys[1]] = floatedMinData
             except Exception as e:
                 self.dictInner[self.keys[1]] = 0
@@ -121,7 +121,7 @@ class WeatherScraper(HTMLParser):
         if self.inMyDate and self.inTd and self.i == 3:
             try:
                 floatedMeanData = data
-                print("Mean  Inner:", floatedMeanData)
+                # print("Mean  Inner:", floatedMeanData)
                 self.dictInner[self.keys[2]] = data
             except Exception as e:
                 self.dictInner[self.keys[2]] = 0
