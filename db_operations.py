@@ -80,7 +80,7 @@ class DBOperations():
             except Exception as e:
                 print("Error:", e)
         self.print_infos()
-        self.query_infos()    
+        self.query_infos()
 
     def print_infos(self):
         """Print the information for checking purpose."""
@@ -92,31 +92,49 @@ class DBOperations():
         connection.close()
 
     def query_infos(self):
-        """Print the information for checking purpose."""
+        """Query db according to user input."""
         connection = sqlite3.connect("weather.sqlite")
         cur = connection.cursor()
-        year = '2018'
-        t = "samples"
-        for row in cur.execute("select * from samples where sample_date like ?", ('%'+year+'%',)):
-            print(row)
+        fromYear = '2018'
+        # toYear = '2019'
+        # t = "samples"
+        # for row in cur.execute("select * from samples where sample_date like ?", ('%'+fromYear+'%',)):
+        #     print(f"row {row}")
+        dictOuter = {}
+        myMean = []
+        #for row in cur.execute("select * from samples where sample_date between '2019/02/%' and '2019/04/%'"):
+        # for row in cur.execute("select * from samples where sample_date like ?", ('%'+fromYear+'%',)):
+        for row in cur.execute("select * from samples where sample_date like '%2018%'"):
+            print(f"row {row}")
+            myMonth = datetime.datetime.strptime(row[1], '%Y/%m/%d').month
+            # https://stackoverflow.com/questions/12905999/python-dict-how-to-create-key-or-append-an-element-to-key
+            dictOuter.setdefault(myMonth, []).append(row[5])
+            # myMean.append(row[5])
+            # dictOuter[myMonth] = myMean
+            # myMean = []
+            # print(f"row {row}")
+            # print(f"date in row: {row[1]}")
+        print(dictOuter)
+        return dictOuter
         connection.commit()
         connection.close()
 
 
-myparser = WeatherScraper()
-now = datetime.datetime.now()
-for i in range(now.year, 2018, -1):
-    climateWeather_year = i
-    for j in range(12, 0, -1):
-        climateWeather_month = j
-        with urllib.request.urlopen(f"https://climate.weather.gc.ca/climate_data/daily_data_e.html?%20StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=%201&Year={climateWeather_year}&Month={climateWeather_month}#") as response:
-            html = str(response.read())
-
-        myparser.feed(html)
+# myparser = WeatherScraper()
+# now = datetime.datetime.now()
+# for i in range(now.year, 2015, -1):
+#     climateWeather_year = i
+#     for j in range(12, 0, -1):
+#         climateWeather_month = j
+#         with urllib.request.urlopen(f"https://climate.weather.gc.ca/climate_data/daily_data_e.html?%20StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=%201&Year={climateWeather_year}&Month={climateWeather_month}#") as response:
+#             html = str(response.read())
+#
+#         myparser.feed(html)
 
 myInstance = DBOperations()
-myInstance.process(myparser.dictOuter)
+# myInstance.process(myparser.dictOuter)
 # print(myparser.dictOuter)
 # myInstance.read_from_db()
 # myInstance.print_infos()
 # myInstance.create_db()
+myInstance.query_infos()
