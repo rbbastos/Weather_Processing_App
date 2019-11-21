@@ -12,14 +12,14 @@ class WeatherProcessor():
 
     def main(self):
         """Create the function for user interaction."""
-        print("1. UPDATE the db up to today's date\n2. DOWNLOAD a full set of weather data\n3. RANGE of your interest")
-        mySelection = '0'
-        while mySelection == '0':
+        mySelection = ''
+        while mySelection != '4':
+            print("1. UPDATE the db up to today's date\n2. DOWNLOAD a full set of weather data\n3. RANGE of your interest\n4. EXIT")
             mySelection = input("Select an option: ")
             # myUpdate = input("Do you want to UPDATE the db up to today's date? (yes or no):")
             # print(myUpdate)
             # if myUpdate == 'yes':
-            print(mySelection == '1')
+            # print(mySelection == '1')
             if mySelection == '1':
                 myparser = WeatherScraper()
                 now = datetime.datetime.now()
@@ -46,6 +46,7 @@ class WeatherProcessor():
                 print(f"outer{myparser.dictOuter}")
                 myOperations = DBOperations()
                 myOperations.process(myparser.dictOuter)
+
             # myDownload = input("Do you want to DOWNLOAD a full set of weather data? (yes or no): ")
             # print(myDownload)
             # if myDownload == 'yes':
@@ -75,14 +76,17 @@ class WeatherProcessor():
                 print(f"outer{myparser.dictOuter}")
                 myOperations = DBOperations()
                 myOperations.process(myparser.dictOuter)
+
             elif mySelection == '3':
                 myRange = input("Please select a RANGE of your interest? (e.g 2017 2019): ")
                 myRange = myRange.split()
-                print(myRange[0])
+                # print(myRange[0])
                 myInstance = DBOperations()
                 myDict = myInstance.query_infos(myRange[0], myRange[1])
                 myPlot = PlotOperations()
                 myPlot.diplay_box_plot(myDict)
+            elif mySelection == '4':
+                break
             else:
                 print("Invalid choice")
 

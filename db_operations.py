@@ -103,7 +103,7 @@ class DBOperations():
         connection = sqlite3.connect("weather.sqlite")
         cur = connection.cursor()
         # fromYear = '2018'
-        # toYear = '2019'
+        toYear = int(toYear) + 1
         # t = "samples"
         # for row in cur.execute("select * from samples where sample_date like ?", ('%'+fromYear+'%',)):
         #     print(f"row {row}")
