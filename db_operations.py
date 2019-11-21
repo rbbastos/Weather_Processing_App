@@ -12,8 +12,8 @@ class DBOperations():
         try:
             connection = sqlite3.connect("weather.sqlite")
             cur = connection.cursor()
-            dropTableStatement = "DROP TABLE samples"
-            cur.execute(dropTableStatement)
+            # dropTableStatement = "DROP TABLE samples"
+            # cur.execute(dropTableStatement)
             print("create_db - Opened the db successfully.")
         except Exception as e:
             print("Error opening DB:", e)
@@ -29,13 +29,16 @@ class DBOperations():
                 min_temp real not null,
                 max_temp real not null,
                 avg_temp real not null);""")
-                # unique on conflict fail
-            cur.execute("""create unique index idx_positions_sample_date ON samples (sample_date);""")
-            connection.commit()
             print("create_db - Table created successfully.")
-
+                # unique on conflict fail
         except Exception as e:
             print("Error creating table:", e)
+        try:
+            cur.execute("""create unique index idx_positions_sample_date ON samples (sample_date);""")
+            connection.commit()
+            print("create_db - Index created successfully.")
+        except Exception as e:
+            print("Error creating Index:", e)
 
         connection.close()
 
@@ -50,17 +53,21 @@ class DBOperations():
                 # values = v.values()
                 # values = list(v.values())
                 try:
-                    max_temp = float(my_Dictionary[sample_date]["max"])
+                    if my_Dictionary[sample_date]["max"] != 'M' and my_Dictionary[sample_date]["max"] != 'E':
+                        max_temp = float(my_Dictionary[sample_date]["max"])
                 except Exception as e:
-                    print("Error:", e)
+                    print(f" max evaluation {my_Dictionary[sample_date]['max'] == 'M'}")
+                    print("Error max:", e)
                 try:
-                    min_temp = float(my_Dictionary[sample_date]["min"])
+                    if my_Dictionary[sample_date]["min"] != 'M' and my_Dictionary[sample_date]["min"] != 'E':
+                        min_temp = float(my_Dictionary[sample_date]["min"])
                 except Exception as e:
-                    print("Error:", e)
+                    print("Error min:", e)
                 try:
-                    avg_temp = float(my_Dictionary[sample_date]["mean"])
+                    if my_Dictionary[sample_date]["mean"] != 'M' and my_Dictionary[sample_date]["mean"] != 'E':
+                        avg_temp = float(my_Dictionary[sample_date]["mean"])
                 except Exception as e:
-                    print("Error:", e)
+                    print("Error mean:", e)
                 try:
                     location = myLocation
                 except Exception as e:
@@ -80,7 +87,7 @@ class DBOperations():
             except Exception as e:
                 print("Error:", e)
         self.print_infos()
-        self.query_infos()
+
 
     def print_infos(self):
         """Print the information for checking purpose."""
@@ -91,20 +98,20 @@ class DBOperations():
         connection.commit()
         connection.close()
 
-    def query_infos(self):
+    def query_infos(self, fromYear, toYear):
         """Query db according to user input."""
         connection = sqlite3.connect("weather.sqlite")
         cur = connection.cursor()
-        fromYear = '2018'
+        # fromYear = '2018'
         # toYear = '2019'
         # t = "samples"
         # for row in cur.execute("select * from samples where sample_date like ?", ('%'+fromYear+'%',)):
         #     print(f"row {row}")
         dictOuter = {}
         myMean = []
-        #for row in cur.execute("select * from samples where sample_date between '2019/02/%' and '2019/04/%'"):
+        for row in cur.execute("select * from samples where sample_date between ? and ?", (str(fromYear)+'%', str(toYear)+'%')):
         # for row in cur.execute("select * from samples where sample_date like ?", ('%'+fromYear+'%',)):
-        for row in cur.execute("select * from samples where sample_date like '%2018%'"):
+        # for row in cur.execute("select * from samples where sample_date like '%2018%'"):
             print(f"row {row}")
             myMonth = datetime.datetime.strptime(row[1], '%Y/%m/%d').month
             # https://stackoverflow.com/questions/12905999/python-dict-how-to-create-key-or-append-an-element-to-key
@@ -122,19 +129,32 @@ class DBOperations():
 
 # myparser = WeatherScraper()
 # now = datetime.datetime.now()
-# for i in range(now.year, 2015, -1):
-#     climateWeather_year = i
-#     for j in range(12, 0, -1):
-#         climateWeather_month = j
-#         with urllib.request.urlopen(f"https://climate.weather.gc.ca/climate_data/daily_data_e.html?%20StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=%201&Year={climateWeather_year}&Month={climateWeather_month}#") as response:
+# x_loop_must_break = False
+# for i in range(now.year, 2017, -1):
+#     myparser.url_year = i
+#     if x_loop_must_break:
+#         break
+#     # climateWeather_year = i
+#     for j in range(0, 12):
+#         myparser.url_month = j
+#         # climateWeather_month = j
+#         passedUrl = f"https://climate.weather.gc.ca/climate_data/daily_data_e.html?%20StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=%201&Year={myparser.url_year}&Month={myparser.url_month}#"
+#         # passedUrl = 'https://climate.weather.gc.ca/climate_data/daily_data_e.html?%20StationID=27174&timeframe=2&StartYear=1840&EndYear=2018&Day=%201&Year=2018&Month=5#'
+#         with urllib.request.urlopen(passedUrl) as response:
 #             html = str(response.read())
 #
 #         myparser.feed(html)
-
-myInstance = DBOperations()
+#         # print(f"after feed {myparser.EqualData}")
+#         if myparser.EqualData is False:
+#             x_loop_must_break = True
+#             break
+# print(f"inner{myparser.dictInner}")
+# print(f"outer{myparser.dictOuter}")
+#
+# myInstance = DBOperations()
 # myInstance.process(myparser.dictOuter)
 # print(myparser.dictOuter)
 # myInstance.read_from_db()
 # myInstance.print_infos()
 # myInstance.create_db()
-myInstance.query_infos()
+# myInstance.query_infos(2016, 2019)

@@ -19,9 +19,9 @@ class PlotOperations():
         plt.show()
 
 
-myInstance = DBOperations()
-myDict = myInstance.query_infos()
-print(f" MYDICT {myDict}")
-
-myPlot = PlotOperations()
-myPlot.diplay_box_plot(myDict)
+# myInstance = DBOperations()
+# myDict = myInstance.query_infos()
+# print(f" MYDICT {myDict}")
+#
+# myPlot = PlotOperations()
+# myPlot.diplay_box_plot(myDict)
